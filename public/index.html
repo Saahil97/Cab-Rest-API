@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Rent-a-Cab</title>
+        <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+         <link href="https://fonts.googleapis.com/css?family=Adamina|Alfa+Slab+One|Playfair+Display+SC|Poiret+One&display=swap" rel="stylesheet">
+        <link href="/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+      <nav>
+    <ul class = "topnavleft" id="dropdownClick">
+        <li> <a href="#home">Home</a></li>
+        <li> <a href="#home">News</a></li>
+        <li> <a href="#home">Contact</a></li>
+        <li> <a href="#home">About</a></li>
+        <li class = "topnavright"> <a href="#home">Login</a></li>
+        <li class = "topnavright"> <a href="#home">SignUp</a></li>
+        <li class = "dropdownIcon"> <a href="javascript:void(0);" onclick="dropdownMenu()">&#9776;</a>
+        </li>
+        </ul>
+    </nav>
+
+        <h1 class="title">Rent-a-Cab  a Simple REST API</h1>
+        <div id="homepage">
+            <h1>Rent a Cab in your area!</h1>
+            <div id="cab"></div>
+        </div>
+
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+        <script src="https://unpkg.com/react@15/dist/react.js"></script>
+        <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+
+        <!-- Create React Component -->
+        <script type="text/babel">
+        var Cabs = React.createClass({
+            getInitialState: function(){
+                return({
+                  cabs: []
+                });
+            },
+            render: function(){
+                var cabs = this.state.cabs;
+              cabs = cabs.map(function(cab, index){
+                    return(
+                        <li key={index}>
+                          <span className={cab.available}></span>
+                          <span className="name">{cab.name}</span>
+                          <span className="cartype">Car-Owned: {cab.cartype}</span>
+                          <span className="dist">{(cab.dis / 10000).toFixed(2)} km</span>
+                        </li>
+                    );
+                });
+                return(
+                    <div id="cab-container">
+                        <form id="search" onSubmit={this.handleSubmit}>
+                            <label>Enter your Latitude:</label>
+                            <input type="text" ref="lat" placeholder="latitude" required />
+                            <label>Enter your Longitude:</label>
+                            <input type="text" ref="lng" placeholder="longitude" required />
+                            <input type="submit" value="Find A Cab" />
+                        </form>
+                        <ul>{cabs}</ul>
+                    </div>
+                );
+            },
+            handleSubmit: function(e){
+                e.preventDefault();
+                var lng = this.refs.lng.value;
+                var lat = this.refs.lat.value;
+                fetch('/api/cab?lng=' + lng + '&lat=' + lat).then(function(data){
+                    return data.json();
+                }).then( json => {
+                    this.setState({
+                        cabs: json
+                    });
+                    console.log(json);
+                });
+            }
+        });
+        ReactDOM.render(<Cabs />, document.getElementById('cab'));
+        </script>
+        <footer class = "footsy">
+                  <p>Created by Saahil Afaq</p>
+            </footer>
+    </body>
+</html>
